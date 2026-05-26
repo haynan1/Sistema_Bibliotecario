@@ -3,39 +3,72 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Bibliotecário</title>
+    <title>Entrar - Bibliotecário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="auth-page">
-    <main class="auth-container">
-        <section class="auth-box">
-            <span class="auth-kicker">Biblioteca institucional</span>
-            <h1 class="auth-brand">Bibliotecário</h1>
-            <p class="auth-subtitle">Acesso ao acervo</p>
+    <div class="auth-split">
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <section class="flash-stack">
-                        {% for category, message in messages %}
-                            <div class="flash-message flash-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    </section>
-                {% endif %}
-            {% endwith %}
+        <!-- Painel editorial esquerdo -->
+        <div class="auth-editorial" aria-hidden="true">
+            <div class="auth-editorial-inner">
+                <div class="auth-brand-row">
+                    <div class="auth-brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <div class="auth-brand-text">
+                        <span class="auth-brand-name">Bibliotecário</span>
+                        <span class="auth-brand-sub">Gestão de acervo</span>
+                    </div>
+                </div>
 
-            <form action="{{ url_for('auth.login') }}" method="post" class="auth-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <label>
-                    Usuário
-                    <input class="form-control" type="text" name="username" required autofocus autocomplete="username">
-                </label>
-                <label>
-                    Senha
-                    <input class="form-control" type="password" name="password" required autocomplete="current-password">
-                </label>
-                <button type="submit" class="btn btn-primary button-full">Entrar</button>
-            </form>
-        </section>
-    </main>
+                <h1 class="auth-editorial-headline">Preserve a memória.<br>Organize o conhecimento.</h1>
+
+                <blockquote class="auth-editorial-quote">
+                    <p>"Uma biblioteca representa o amor pelo conhecimento, o desejo de torná-lo acessível a todos."</p>
+                    <cite>— Umberto Eco</cite>
+                </blockquote>
+            </div>
+        </div>
+
+        <!-- Painel do formulário direito -->
+        <div class="auth-form-panel">
+            <div class="auth-box">
+                <span class="auth-kicker">Acesso restrito</span>
+                <h2 class="auth-heading">Entrar</h2>
+                <p class="auth-subtitle">Gerencie o acervo, empréstimos e leitores.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <section class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </section>
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('auth.login') }}" method="post" class="auth-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label>
+                        Usuário
+                        <input class="form-control" type="text" name="username" required autofocus autocomplete="username">
+                    </label>
+                    <label>
+                        Senha
+                        <input class="form-control" type="password" name="password" required autocomplete="current-password">
+                    </label>
+                    <button type="submit" class="btn btn-primary button-full">Entrar</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
 </body>
 </html>

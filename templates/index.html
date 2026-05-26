@@ -7,7 +7,7 @@
     <div>
         <span class="eyebrow">Visão geral do acervo</span>
         <h1>Dashboard</h1>
-        <p>Resumo operacional da biblioteca, com os principais indicadores do acervo e da circulação.</p>
+        <p>Resumo operacional da biblioteca — indicadores do acervo e da circulação em tempo real.</p>
     </div>
 </section>
 
@@ -20,7 +20,7 @@
     <article class="stat-card">
         <span>Usuários ativos</span>
         <strong>{{ totais.usuarios_ativos }}</strong>
-        <small>Leitores aptos</small>
+        <small>Leitores aptos ao empréstimo</small>
     </article>
     <article class="stat-card">
         <span>Empréstimos ativos</span>
@@ -28,7 +28,7 @@
         <small>Obras em circulação</small>
     </article>
     <article class="stat-card stat-card-warning">
-        <span>Empréstimos atrasados</span>
+        <span>Em atraso</span>
         <strong>{{ totais.emprestimos_atrasados }}</strong>
         <small>Requerem acompanhamento</small>
     </article>
@@ -39,11 +39,18 @@
         <span class="eyebrow">Bibliotecário</span>
         <h2>Acervo sob controle</h2>
         <p>
-            Consulte cadastros, acompanhe empréstimos e registre devoluções em uma interface feita para
-            preservar a organização da biblioteca.
+            Consulte cadastros, acompanhe empréstimos e registre devoluções em uma interface
+            feita para preservar a organização e a memória da biblioteca.
         </p>
     </article>
-    <article class="card image-feature" aria-label="Livros antigos em destaque"></article>
+
+    <article class="card image-feature" aria-label="Imagem do acervo">
+        <blockquote class="image-feature-quote">
+            <p>"Quem lê muito e anda muito, vê muito e sabe muito."</p>
+            <cite>— Miguel de Cervantes</cite>
+        </blockquote>
+    </article>
+
     <article class="card quick-actions">
         <h2>Ações rápidas</h2>
         <div class="action-grid">
