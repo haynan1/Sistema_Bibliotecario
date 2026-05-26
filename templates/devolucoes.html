@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Devoluções - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Retorno ao acervo</span>
+        <h1>Devoluções</h1>
+        <p>Baixa de empréstimos e histórico de retornos registrados.</p>
+    </div>
+</section>
+
+<section class="card form-panel">
+    <h2>Registrar devolução</h2>
+    <form action="{{ url_for('devolucoes.registrar') }}" method="post" class="grid-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>
+            Empréstimo ativo
+            <select class="form-control" name="emprestimo_id" required>
+                <option value="">Selecione</option>
+                {% for emprestimo in emprestimos_ativos %}
+                    <option value="{{ emprestimo.id }}" {% if emprestimo_id_preselecionado and emprestimo_id_preselecionado|int == emprestimo.id %}selected{% endif %}>
+                        {{ emprestimo.usuario_nome }} - {{ emprestimo.livro_titulo }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Data da devolução
+            <input class="form-control" type="date" name="data_devolucao" required value="{{ hoje }}">
+        </label>
+        <label class="wide">
+            Observação
+            <textarea class="form-control" name="observacao" rows="3"></textarea>
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Registrar devolução</button>
+        </div>
+    </form>
+</section>
+
+<section class="card table-panel">
+    <div class="table-heading">
+        <h2>Histórico de devoluções</h2>
+        <span>{{ devolucoes|length }} registro(s) nesta pagina</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Livro</th>
+                    <th>Data do empréstimo</th>
+                    <th>Data da devolução</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for devolucao in devolucoes %}
+                    <tr>
+                        <td>{{ devolucao.usuario_nome }}</td>
+                        <td>{{ devolucao.livro_titulo }}</td>
+                        <td>{{ devolucao.data_emprestimo }}</td>
+                        <td>{{ devolucao.data_devolucao }}</td>
+                        <td>{{ devolucao.observacao or "-" }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">Nenhuma devolução registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a class="btn btn-secondary" href="{{ url_for('devolucoes.listar', page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span class="page-info">{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a class="btn btn-secondary" href="{{ url_for('devolucoes.listar', page=page+1) }}">Próximo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

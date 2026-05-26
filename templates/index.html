@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Visão geral do acervo</span>
+        <h1>Dashboard</h1>
+        <p>Resumo operacional da biblioteca, com os principais indicadores do acervo e da circulação.</p>
+    </div>
+</section>
+
+<section class="metrics">
+    <article class="stat-card">
+        <span>Total de livros</span>
+        <strong>{{ totais.livros }}</strong>
+        <small>Volumes catalogados</small>
+    </article>
+    <article class="stat-card">
+        <span>Usuários ativos</span>
+        <strong>{{ totais.usuarios_ativos }}</strong>
+        <small>Leitores aptos</small>
+    </article>
+    <article class="stat-card">
+        <span>Empréstimos ativos</span>
+        <strong>{{ totais.emprestimos_ativos }}</strong>
+        <small>Obras em circulação</small>
+    </article>
+    <article class="stat-card stat-card-warning">
+        <span>Empréstimos atrasados</span>
+        <strong>{{ totais.emprestimos_atrasados }}</strong>
+        <small>Requerem acompanhamento</small>
+    </article>
+</section>
+
+<section class="dashboard-grid">
+    <article class="card library-note">
+        <span class="eyebrow">Bibliotecário</span>
+        <h2>Acervo sob controle</h2>
+        <p>
+            Consulte cadastros, acompanhe empréstimos e registre devoluções em uma interface feita para
+            preservar a organização da biblioteca.
+        </p>
+    </article>
+    <article class="card quick-actions">
+        <h2>Ações rápidas</h2>
+        <div class="action-grid">
+            <a class="btn btn-primary" href="{{ url_for('livros.listar') }}">Novo livro</a>
+            <a class="btn btn-secondary" href="{{ url_for('autores.listar') }}">Novo autor</a>
+            <a class="btn btn-secondary" href="{{ url_for('usuarios.listar') }}">Novo usuário</a>
+            <a class="btn btn-secondary" href="{{ url_for('emprestimos.listar') }}">Registrar empréstimo</a>
+        </div>
+    </article>
+</section>
+{% endblock %}

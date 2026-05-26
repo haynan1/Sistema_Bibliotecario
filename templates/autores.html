@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Autores - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Memoria autoral</span>
+        <h1>Autores</h1>
+        <p>Cadastro e manutenção dos autores vinculados ao acervo.</p>
+    </div>
+</section>
+
+<section class="card form-panel">
+    <h2>{{ "Editar autor" if autor_edicao else "Novo autor" }}</h2>
+    <form action="{{ url_for('autores.salvar') }}" method="post" class="grid-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="id" value="{{ autor_edicao.id if autor_edicao else '' }}">
+        <label>
+            Nome
+            <input class="form-control" name="nome" required value="{{ autor_edicao.nome if autor_edicao else '' }}">
+        </label>
+        <label>
+            Nacionalidade
+            <input class="form-control" name="nacionalidade" value="{{ autor_edicao.nacionalidade if autor_edicao else '' }}">
+        </label>
+        <label>
+            Data de nascimento
+            <input class="form-control" type="date" name="data_nascimento" value="{{ autor_edicao.data_nascimento if autor_edicao else '' }}">
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Salvar</button>
+            {% if autor_edicao %}
+                <a class="btn btn-secondary" href="{{ url_for('autores.listar') }}">Cancelar</a>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<section class="card table-panel">
+    <div class="table-heading">
+        <h2>Autores catalogados</h2>
+        <span>{{ autores|length }} registro(s) nesta pagina</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Nacionalidade</th>
+                    <th>Data de nascimento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for autor in autores %}
+                    <tr>
+                        <td>{{ autor.nome }}</td>
+                        <td>{{ autor.nacionalidade or "-" }}</td>
+                        <td>{{ autor.data_nascimento or "-" }}</td>
+                        <td class="actions">
+                            <a class="btn btn-secondary" href="{{ url_for('autores.listar', editar=autor.id) }}">Editar</a>
+                            <form action="{{ url_for('autores.excluir', autor_id=autor.id) }}" method="post" data-confirm="Excluir este autor?">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-danger" type="submit">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="empty">Nenhum autor cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a class="btn btn-secondary" href="{{ url_for('autores.listar', page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span class="page-info">{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a class="btn btn-secondary" href="{{ url_for('autores.listar', page=page+1) }}">Próximo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

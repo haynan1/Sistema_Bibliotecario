@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Bibliotecário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-container">
+        <section class="auth-box">
+            <span class="auth-kicker">Biblioteca institucional</span>
+            <h1 class="auth-brand">Bibliotecário</h1>
+            <p class="auth-subtitle">Acesso ao acervo</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('auth.login') }}" method="post" class="auth-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>
+                    Usuário
+                    <input class="form-control" type="text" name="username" required autofocus autocomplete="username">
+                </label>
+                <label>
+                    Senha
+                    <input class="form-control" type="password" name="password" required autocomplete="current-password">
+                </label>
+                <button type="submit" class="btn btn-primary button-full">Entrar</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

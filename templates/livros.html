@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Livros - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Catálogo principal</span>
+        <h1>Livros</h1>
+        <p>Acervo, estoque total e disponibilidade para empréstimo.</p>
+    </div>
+</section>
+
+<section class="card form-panel">
+    <h2>{{ "Editar livro" if livro_edicao else "Novo livro" }}</h2>
+    <form action="{{ url_for('livros.salvar') }}" method="post" class="grid-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="id" value="{{ livro_edicao.id if livro_edicao else '' }}">
+        <label>
+            Título
+            <input class="form-control" name="titulo" required value="{{ livro_edicao.titulo if livro_edicao else '' }}">
+        </label>
+        <label>
+            ISBN
+            <input class="form-control" name="isbn" required value="{{ livro_edicao.isbn if livro_edicao else '' }}">
+        </label>
+        <label>
+            Ano de publicação
+            <input class="form-control" type="number" name="ano_publicacao" value="{{ livro_edicao.ano_publicacao if livro_edicao else '' }}">
+        </label>
+        <label>
+            Quantidade total
+            <input class="form-control" type="number" min="0" name="quantidade_total" required value="{{ livro_edicao.quantidade_total if livro_edicao else 1 }}">
+        </label>
+        <label>
+            Quantidade disponível
+            <input class="form-control" type="number" min="0" name="quantidade_disponivel" required value="{{ livro_edicao.quantidade_disponivel if livro_edicao else 1 }}">
+        </label>
+        <label>
+            Autor
+            <select class="form-control" name="autor_id" required>
+                <option value="">Selecione</option>
+                {% for autor in autores %}
+                    <option value="{{ autor.id }}" {% if livro_edicao and livro_edicao.autor_id == autor.id %}selected{% endif %}>{{ autor.nome }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Salvar</button>
+            {% if livro_edicao %}
+                <a class="btn btn-secondary" href="{{ url_for('livros.listar') }}">Cancelar</a>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<section class="card table-panel">
+    <div class="table-heading">
+        <h2>Catálogo do acervo</h2>
+        <span>{{ livros|length }} registro(s) nesta pagina</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>ISBN</th>
+                    <th>Autor</th>
+                    <th>Total</th>
+                    <th>Disponível</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                    <tr>
+                        <td>{{ livro.titulo }}</td>
+                        <td>{{ livro.isbn }}</td>
+                        <td>{{ livro.autor_nome }}</td>
+                        <td>{{ livro.quantidade_total }}</td>
+                        <td><span class="badge badge-success">{{ livro.quantidade_disponivel }}</span></td>
+                        <td class="actions">
+                            <a class="btn btn-secondary" href="{{ url_for('livros.listar', editar=livro.id) }}">Editar</a>
+                            <form action="{{ url_for('livros.excluir', livro_id=livro.id) }}" method="post" data-confirm="Excluir este livro?">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-danger" type="submit">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="empty">Nenhum livro cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a class="btn btn-secondary" href="{{ url_for('livros.listar', page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span class="page-info">{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a class="btn btn-secondary" href="{{ url_for('livros.listar', page=page+1) }}">Próximo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

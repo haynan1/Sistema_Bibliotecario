@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Bibliotecário{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a class="sidebar-brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">B</span>
+                <span>
+                    <strong>Bibliotecário</strong>
+                    <small>Gestão inteligente de acervo</small>
+                </span>
+            </a>
+
+            <nav class="sidebar-menu" aria-label="Menu principal">
+                <a class="sidebar-link" href="{{ url_for('index') }}">Dashboard</a>
+                <a class="sidebar-link" href="{{ url_for('livros.listar') }}">Livros</a>
+                <a class="sidebar-link" href="{{ url_for('autores.listar') }}">Autores</a>
+                <a class="sidebar-link" href="{{ url_for('usuarios.listar') }}">Usuários</a>
+                <a class="sidebar-link" href="{{ url_for('emprestimos.listar') }}">Empréstimos</a>
+                <a class="sidebar-link" href="{{ url_for('devolucoes.listar') }}">Devoluções</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span>Acervo institucional</span>
+                <strong>Ordem, memória e conhecimento</strong>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <button class="sidebar-toggle" type="button" aria-label="Abrir menu" aria-controls="sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="topbar-title">
+                    <span>Sistema Bibliotecário</span>
+                    <strong>Administração do acervo</strong>
+                </div>
+                <form action="{{ url_for('auth.logout') }}" method="post" class="logout-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-secondary button-logout">Sair</button>
+                </form>
+            </header>
+
+            <main class="content-area">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <section class="flash-stack" aria-live="polite">
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </section>
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

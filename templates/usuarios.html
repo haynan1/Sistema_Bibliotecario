@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Leitores e acesso</span>
+        <h1>Usuários</h1>
+        <p>Cadastro de leitores e controle de bloqueio para empréstimos.</p>
+    </div>
+</section>
+
+<section class="card form-panel">
+    <h2>{{ "Editar usuário" if usuario_edicao else "Novo usuário" }}</h2>
+    <form action="{{ url_for('usuarios.salvar') }}" method="post" class="grid-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="id" value="{{ usuario_edicao.id if usuario_edicao else '' }}">
+        <label>
+            Nome
+            <input class="form-control" name="nome" required value="{{ usuario_edicao.nome if usuario_edicao else '' }}">
+        </label>
+        <label>
+            E-mail
+            <input class="form-control" type="email" name="email" required value="{{ usuario_edicao.email if usuario_edicao else '' }}">
+        </label>
+        <label>
+            Telefone
+            <input class="form-control" name="telefone" value="{{ usuario_edicao.telefone if usuario_edicao else '' }}">
+        </label>
+        <label>
+            Status
+            <select class="form-control" name="status">
+                <option value="ativo" {% if not usuario_edicao or usuario_edicao.status == "ativo" %}selected{% endif %}>Ativo</option>
+                <option value="bloqueado" {% if usuario_edicao and usuario_edicao.status == "bloqueado" %}selected{% endif %}>Bloqueado</option>
+            </select>
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Salvar</button>
+            {% if usuario_edicao %}
+                <a class="btn btn-secondary" href="{{ url_for('usuarios.listar') }}">Cancelar</a>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<section class="card table-panel">
+    <div class="table-heading">
+        <h2>Leitores cadastrados</h2>
+        <span>{{ usuarios|length }} registro(s) nesta pagina</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nome }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.telefone or "-" }}</td>
+                        <td><span class="badge status status-{{ usuario.status }}">{{ usuario.status }}</span></td>
+                        <td class="actions">
+                            <a class="btn btn-secondary" href="{{ url_for('usuarios.listar', editar=usuario.id) }}">Editar</a>
+                            <form action="{{ url_for('usuarios.alternar_status', usuario_id=usuario.id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-primary" type="submit">{{ "Bloquear" if usuario.status == "ativo" else "Desbloquear" }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">Nenhum usuário cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a class="btn btn-secondary" href="{{ url_for('usuarios.listar', page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span class="page-info">{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a class="btn btn-secondary" href="{{ url_for('usuarios.listar', page=page+1) }}">Próximo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

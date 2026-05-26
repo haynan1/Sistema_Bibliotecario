@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Empréstimos - Bibliotecário{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Circulação de obras</span>
+        <h1>Empréstimos</h1>
+        <p>Registro de retirada e acompanhamento dos livros em circulação.</p>
+    </div>
+</section>
+
+<section class="card form-panel">
+    <h2>Novo empréstimo</h2>
+    <form action="{{ url_for('emprestimos.criar') }}" method="post" class="grid-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>
+            Usuário ativo
+            <select class="form-control" name="usuario_id" required>
+                <option value="">Selecione</option>
+                {% for usuario in usuarios %}
+                    <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Livro disponível
+            <select class="form-control" name="livro_id" required>
+                <option value="">Selecione</option>
+                {% for livro in livros %}
+                    <option value="{{ livro.id }}">{{ livro.titulo }} ({{ livro.quantidade_disponivel }} disp.)</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Data do empréstimo
+            <input class="form-control" type="date" name="data_emprestimo" required value="{{ hoje }}">
+        </label>
+        <label>
+            Data prevista de devolução
+            <input class="form-control" type="date" name="data_prevista_devolucao" required value="{{ data_prevista_padrao }}">
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Registrar empréstimo</button>
+        </div>
+    </form>
+</section>
+
+<section class="card table-panel">
+    <div class="table-heading">
+        <h2>Empréstimos registrados</h2>
+        <span>{{ emprestimos|length }} registro(s) nesta pagina</span>
+    </div>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Livro</th>
+                    <th>Data do empréstimo</th>
+                    <th>Previsão de devolução</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emprestimo in emprestimos %}
+                    <tr>
+                        <td>{{ emprestimo.usuario_nome }}</td>
+                        <td>{{ emprestimo.livro_titulo }}</td>
+                        <td>{{ emprestimo.data_emprestimo }}</td>
+                        <td>{{ emprestimo.data_prevista_devolucao }}</td>
+                        <td><span class="badge status status-{{ emprestimo.status }}">{{ emprestimo.status }}</span></td>
+                        <td class="actions">
+                            {% if emprestimo.status != "devolvido" %}
+                                <form action="{{ url_for('devolucoes.registrar') }}" method="post" class="inline-return-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="emprestimo_id" value="{{ emprestimo.id }}">
+                                    <input type="hidden" name="data_devolucao" value="{{ hoje }}">
+                                    <input type="hidden" name="origem" value="emprestimos">
+                                    <button class="btn btn-primary" type="submit">Devolver hoje</button>
+                                </form>
+                                <a class="btn btn-secondary" href="{{ url_for('devolucoes.listar', emprestimo_id=emprestimo.id) }}">Detalhar</a>
+                            {% else %}
+                                <span class="muted">Finalizado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="empty">Nenhum empréstimo registrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a class="btn btn-secondary" href="{{ url_for('emprestimos.listar', page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span class="page-info">{{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a class="btn btn-secondary" href="{{ url_for('emprestimos.listar', page=page+1) }}">Próximo</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
