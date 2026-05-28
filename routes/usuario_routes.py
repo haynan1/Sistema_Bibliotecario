@@ -52,6 +52,20 @@ def salvar():
     return redirect(url_for("usuarios.listar"))
 
 
+@usuario_bp.route("/excluir/<int:usuario_id>", methods=["POST"])
+@login_required
+def excluir(usuario_id):
+    try:
+        UsuarioModel.excluir(usuario_id)
+        flash("Usuário excluído com sucesso.", "success")
+    except ValueError as erro:
+        flash(str(erro), "error")
+    except Error:
+        logger.exception("Erro ao excluir usuário %s", usuario_id)
+        flash("Não foi possível excluir o usuário.", "error")
+    return redirect(url_for("usuarios.listar"))
+
+
 @usuario_bp.route("/alternar-status/<int:usuario_id>", methods=["POST"])
 @login_required
 def alternar_status(usuario_id):

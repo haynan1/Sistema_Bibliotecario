@@ -67,7 +67,9 @@ def excluir(livro_id):
     try:
         LivroModel.excluir(livro_id)
         flash("Livro excluído com sucesso.", "success")
+    except ValueError as erro:
+        flash(str(erro), "error")
     except Error:
         logger.exception("Erro ao excluir livro %s", livro_id)
-        flash("Não foi possível excluir: existem empréstimos vinculados a este livro.", "error")
+        flash("Não foi possível excluir o livro.", "error")
     return redirect(url_for("livros.listar"))

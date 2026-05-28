@@ -26,7 +26,16 @@
         </label>
         <label>
             Telefone
-            <input class="form-control" name="telefone" value="{{ usuario_edicao.telefone if usuario_edicao else '' }}">
+            <input
+                class="form-control"
+                type="tel"
+                name="telefone"
+                inputmode="numeric"
+                maxlength="15"
+                placeholder="(00) 00000-0000"
+                data-phone-mask
+                value="{{ usuario_edicao.telefone if usuario_edicao else '' }}"
+            >
         </label>
         <label>
             Status
@@ -72,6 +81,10 @@
                             <form action="{{ url_for('usuarios.alternar_status', usuario_id=usuario.id) }}" method="post">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button class="btn btn-primary" type="submit">{{ "Bloquear" if usuario.status == "ativo" else "Desbloquear" }}</button>
+                            </form>
+                            <form action="{{ url_for('usuarios.excluir', usuario_id=usuario.id) }}" method="post" data-confirm="Excluir este usuário?">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-danger" type="submit">Excluir</button>
                             </form>
                         </td>
                     </tr>

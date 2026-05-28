@@ -1,6 +1,6 @@
 import logging
 
-from models.db import execute, fetch_all, fetch_one
+from models.db import execute, fetch_all, fetch_one, get_connection
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,45 @@ class LivroModel:
 
     @staticmethod
     def excluir(livro_id):
-        execute("DELETE FROM livros WHERE id = %s", (livro_id,))
+        connection = get_connection()
+        try:
+            cursor = connection.cursor(dictionary=True)
+            try:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) AS n
+                    FROM emprestimos
+                    WHERE livro_id = %s AND status <> 'devolvido'
+                    """,
+                    (livro_id,),
+                )
+                emprestimos_pendentes = cursor.fetchone()["n"]
+                if emprestimos_pendentes:
+                    raise ValueError("Não é possível excluir: ainda existem devoluções pendentes para este livro.")
+
+                cursor.execute(
+                    """
+                    DELETE devolucoes
+                    FROM devolucoes
+                    JOIN emprestimos ON emprestimos.id = devolucoes.emprestimo_id
+                    WHERE emprestimos.livro_id = %s
+                    """,
+                    (livro_id,),
+                )
+                cursor.execute("DELETE FROM emprestimos WHERE livro_id = %s", (livro_id,))
+                cursor.execute("DELETE FROM livros WHERE id = %s", (livro_id,))
+
+                if cursor.rowcount == 0:
+                    raise ValueError("Livro não encontrado.")
+
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+            finally:
+                cursor.close()
+        finally:
+            connection.close()
 
     @staticmethod
     def _validar_quantidades(quantidade_total, quantidade_disponivel):
